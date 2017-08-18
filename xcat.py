@@ -131,10 +131,12 @@ def init_redeem_p2sh(contract, revertcontract):
     revert_currency = revertcontract.currency
 
     if (currency == 'bitcoin'):
+        print("11")
         contract = bXcat.check_and_return_fundtx(contract)
         contract.redeemtype = 'secret'
     
     if (currency == 'zcash'):
+        print("22")
         contract = zXcat.check_and_return_fundtx(contract)
         contract.redeemtype = 'secret'
     

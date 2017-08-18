@@ -111,7 +111,7 @@ def get_redeemer_priv_key(contract):
 
 def check_and_return_fundtx(contract):
     # How to find redeemscript and redeemblocknum from blockchain?
-    print("Redeeming contract using secret", contract.__dict__)
+    print("Redeeming contract using secret")#, contract.__dict__)
     p2sh = contract.p2sh
     minamount = float(contract.amount)
     # the funder may have accidentily funded the p2sh with sufficient amount in several transactions. The current code
@@ -126,27 +126,26 @@ def check_and_return_fundtx(contract):
         print("funder funded ", p2sh, " in more than one tx will need to run redeem again to get whole amount")
     
     
-    contract.fund_tx = fund_tx
+    contract.fund_tx = fundtx
     return contract
 
 # assuming we have the correct fund tx in the contract prepares the signed redeem raw tx
 def get_raw_redeem(contract, privkey):
-    fundtx = find_transaction_to_address(p2sh)
+
     p2sh = contract.p2sh
     p2sh = P2SHBitcoinAddress(p2sh)
-    if fundtx['address'] == p2sh:
+    fundtx = contract.fund_tx
+    '''if contract.fund_tx['address'] == p2sh:
         print("Found {0} in p2sh {1}, redeeming...".format(amount, p2sh))
+'''
+    redeemPubKey = find_redeemAddr(contract)
+    print('redeemPubKey', redeemPubKey)
 
-        redeemPubKey = find_redeemAddr(contract)
-        print('redeemPubKey', redeemPubKey)
-
-        redeemscript = CScript(x(contract.redeemscript))
-        txin = CMutableTxIn(fundtx['outpoint'])
-        txout = CMutableTxOut(fundtx['amount'] - FEE, redeemPubKey.to_scriptPubKey())
-        # Create the unsigned raw transaction.
-        tx = CMutableTransaction([txin], [txout])
-    else:
-        print("No contract for this p2sh found in database", p2sh)
+    redeemscript = CScript(x(contract.redeemscript))
+    txin = CMutableTxIn(fundtx['outpoint'])
+    txout = CMutableTxOut(fundtx['amount'] - FEE, redeemPubKey.to_scriptPubKey())
+    # Create the unsigned raw transaction.
+    tx = CMutableTransaction([txin], [txout])
 
 
     sighash = SignatureHash(redeemscript, tx, 0, SIGHASH_ALL)
@@ -164,7 +163,7 @@ def get_raw_redeem(contract, privkey):
     txin_scriptPubKey = redeemscript.to_p2sh_scriptPubKey()
     VerifyScript(txin.scriptSig, txin_scriptPubKey, tx, 0, (SCRIPT_VERIFY_P2SH,))
     print("script verified, writing raw redeem tx in contract")
-    contract.rawredeemtx = tx
+    contract.rawredeemtx = CMutableTransaction.serialize(tx)
     return contract
 
 
@@ -280,7 +279,7 @@ def find_transaction_to_address(p2sh):
     txs = bitcoind.listunspent()
     for tx in txs:
         if tx['address'] == CBitcoinAddress(p2sh):
-            print("Found tx to p2sh", p2sh, "tx is", tx)
+            print("Found tx to p2sh", p2sh)#, "tx is", tx)
             return tx
     return ""
 

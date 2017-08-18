@@ -141,6 +141,8 @@ def buyer_redeem():
     trade = get_buyer_trade()
     buyContract = trade.buyContract
     sellContract = trade.sellContract
+    (sell,buy) = init_redeem_p2sh(trade.sellContract, trade.buyContract)
+ 
     secret = ""
     # if sellContract.get_status() == 'redeemed':
     #     raise RuntimeError("Sell contract was redeemed before buyer could retrieve funds")
@@ -148,22 +150,41 @@ def buyer_redeem():
     #     print("buyContract was refunded to buyer")
     # else:
     # Buy contract is where seller disclosed secret in redeeming
-    if buyContract.currency == 'bitcoin':
-        if (bXcat.still_locked(buyContract)):
-            if(not hasattr(buyContract,'fund_tx')):
-                print("Seems address has not been funded yet. Aborting.")
-                quit()
+        # in case we're still in the time lock on buy side, try to redeem with secret
+    print(sell.redeemtype)
+    if(sell.redeemtype == 'secret'):
+        print("33")
+        if(not hasattr(buyContract,'fund_tx')):
+            print("Seems address has not been funded yet. Aborting.")
+            quit()
+        if buy.currency == 'bitcoin':
             secret = bXcat.find_secret(buyContract.p2sh,buyContract.fund_tx)
             if(secret != ""):
                 print("Found secret in seller's redeem tx on bitcoin chain:", secret)
-    else:
-        if zXcat.still_locked(buyContract):
+            else:
+                print("Secret not found")
+        else:
             secret = zXcat.find_secret(buyContract.p2sh,buyContract.fund_tx)
             if(secret != ""):
                 print("Found secret in seller's redeem tx on zcash chain:", secret)
-    redeem_tx = redeem_p2sh(sellContract, secret, buyContract)
-    setattr(trade.sellContract, 'redeem_tx', redeem_tx)
-    save_buyer(trade)
+            else:
+                print("Secret not found")
+
+        save_secret(secret)
+        privkey = get_redeemer_priv_key(sell)    
+        sell = get_raw_redeem(sell,privkey)  #puts the raw transaction in the raw_redeem field
+        sell.redeem_tx = send_raw_tx(sell.currency, CMutableTransaction.deserialize(sell.rawredeemtx))
+        print(b2x(lx(b2x(sell.redeem_tx))))
+    if(buy.redeemtype == 'timelock'):
+        privkey = get_redeemer_priv_key(buy)    
+        buy = get_raw_redeem(buy,privkey)
+        buy.redeem_tx = send_raw_tx(buy.currency, buy.rawredeemtx)
+    
+    trade.buyContract = buy
+    trade.sellContract = sell
+
+
+    #save_buyer(trade)
 
 
 def generate_blocks(num):

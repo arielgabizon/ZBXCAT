@@ -85,7 +85,7 @@ def find_transaction_to_address(p2sh):
     txs = zcashd.listunspent()
     for tx in txs:
         if tx['address'] == CBitcoinAddress(p2sh):
-            print("Found tx to p2sh", p2sh, "tx is ", tx)
+            print("Found tx to p2sh", p2sh)#, "tx is ", tx)
             return tx
 
 # def get_tx_details(txid):
@@ -356,7 +356,7 @@ def get_raw_redeem(contract, privkey):
 
 def check_and_return_fundtx(contract):
     # How to find redeemscript and redeemblocknum from blockchain?
-    print("Redeeming contract using secret", contract.__dict__)
+    print("Redeeming contract using secret")#, contract.__dict__)
     p2sh = contract.p2sh
     minamount = float(contract.amount)
     # the funder may have accidentily funded the p2sh with sufficient amount in several transactions. The current code
