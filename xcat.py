@@ -27,10 +27,10 @@ def get_raw_redeem(contract, privkey):
     else:
         raise ValueError("invalid currency value:", contract.currency)
 
-def send_raw_tx(rawtx):
-    if contract.currency == 'bitcoin':
+def send_raw_tx(currency, rawtx):
+    if currency == 'bitcoin':
         return bXcat.send_raw_tx(rawtx)
-    elif contract.currency == 'zcash':
+    elif currency == 'zcash':
         return zXcat.send_raw_tx(rawtx)
     else:
         raise ValueError("invalid currency value:", contract.currency)

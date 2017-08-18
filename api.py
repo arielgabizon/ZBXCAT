@@ -1,7 +1,11 @@
 import zXcat
 import bXcat
+from zcash.core import b2x, lx, x, b2lx, COIN, COutPoint, CMutableTxOut, CMutableTxIn, CMutableTransaction, Hash160
+
 from xcat import *
 from zcash.core import b2x
+from zcash.core.serialize import *
+
 print("Starting test of xcat...")
 
 def get_initiator_addresses():
@@ -84,6 +88,7 @@ def seller_fund():
     print("============================")
     trade = get_init()
     trade.sellContract = fund_contract(trade.sellContract)
+    print("TYope of fund:",type(trade.sellContract.fund_tx))
     print("fund txid on ", trade.sellContract.currency, " chain is ", trade.sellContract.fund_tx)
     save_seller_trade(trade)
 
@@ -116,17 +121,17 @@ def seller_redeem():
     if(buy.redeemtype == 'secret'):
         privkey = get_redeemer_priv_key(buy)    
         buy = get_raw_redeem(buy,privkey)  #puts the raw transaction in the raw_redeem field
-        buy.redeem_tx = send_raw_tx(buy.rawredeem)
-
+        buy.redeem_tx = send_raw_tx(buy.currency, CMutableTransaction.deserialize(buy.rawredeemtx))
+        print(b2x(lx(b2x(buy.redeem_tx))))
     if(sell.redeemtype == 'timelock'):
         privkey = get_redeemer_priv_key(sell)    
         sell = get_raw_redeem(sell,privkey)
-        sell.redeem_tx = send_raw_tx(sell.rawredeem)
+        sell.redeem_tx = send_raw_tx(sell.currency, sell.rawredeemtx)
     
     trade.buyContract = buy
     trade.sellContract = sell
     
-    save_seller(trade)
+    #save_seller_trade(trade)
     
 
 

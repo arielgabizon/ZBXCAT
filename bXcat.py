@@ -131,7 +131,7 @@ def check_and_return_fundtx(contract):
 
 # assuming we have the correct fund tx in the contract prepares the signed redeem raw tx
 def get_raw_redeem(contract, privkey):
-
+    fundtx = find_transaction_to_address(p2sh)
     p2sh = contract.p2sh
     p2sh = P2SHBitcoinAddress(p2sh)
     if fundtx['address'] == p2sh:
