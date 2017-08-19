@@ -319,8 +319,9 @@ def get_redeemer_priv_key(contract):
 def get_raw_redeem(contract, privkey):
 
     p2sh = contract.p2sh
+    fundtx = find_transaction_to_address(p2sh)
+ 
     p2sh = P2SHBitcoinAddress(p2sh)
-    fundtx = contract.fund_tx
     '''if contract.fund_tx['address'] == p2sh:
         print("Found {0} in p2sh {1}, redeeming...".format(amount, p2sh))
 '''
@@ -349,7 +350,8 @@ def get_raw_redeem(contract, privkey):
     txin_scriptPubKey = redeemscript.to_p2sh_scriptPubKey()
     VerifyScript(txin.scriptSig, txin_scriptPubKey, tx, 0, (SCRIPT_VERIFY_P2SH,))
     print("script verified, writing raw redeem tx in contract")
-    contract.rawredeemtx = CMutableTransaction.serialize(tx)
+    contract.rawredeemtx = b2x(CMutableTransaction.serialize(tx))
+    print("TTYPPE:", type(contract.rawredeemtx))
     return contract
 
 
@@ -372,5 +374,5 @@ def check_and_return_fundtx(contract):
         raise ValueError("Insufficient funds in fund transaction.")
     
     
-    contract.fund_tx = fundtx
+    # contract.fund_tx = fundtx
     return contract

@@ -126,7 +126,8 @@ def check_and_return_fundtx(contract):
         print("funder funded ", p2sh, " in more than one tx will need to run redeem again to get whole amount")
     
     
-    contract.fund_tx = fundtx
+    # contract.fund_tx = fundtx['txid']
+
     return contract
 
 # assuming we have the correct fund tx in the contract prepares the signed redeem raw tx
@@ -163,7 +164,7 @@ def get_raw_redeem(contract, privkey):
     txin_scriptPubKey = redeemscript.to_p2sh_scriptPubKey()
     VerifyScript(txin.scriptSig, txin_scriptPubKey, tx, 0, (SCRIPT_VERIFY_P2SH,))
     print("script verified, writing raw redeem tx in contract")
-    contract.rawredeemtx = CMutableTransaction.serialize(tx)
+    #contract.rawredeemtx = CMutableTransaction.serialize(tx)
     return contract
 
 

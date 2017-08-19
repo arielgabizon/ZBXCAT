@@ -115,23 +115,36 @@ def seller_redeem():
     print("=============================")
     buy = trade.buyContract
     print(buy)
+
     (buy,sell) = init_redeem_p2sh(trade.buyContract, trade.sellContract)
-    
+       
     # in case we're still in the time lock on buy side, try to redeem with secret
     if(buy.redeemtype == 'secret'):
         privkey = get_redeemer_priv_key(buy)    
         buy = get_raw_redeem(buy,privkey)  #puts the raw transaction in the raw_redeem field
-        buy.redeem_tx = send_raw_tx(buy.currency, CMutableTransaction.deserialize(buy.rawredeemtx))
+        save_seller_trade(trade)
+
+        buy.redeem_tx = send_raw_tx(buy.currency, CMutableTransaction.deserialize(x(buy.rawredeemtx)))
         print(b2x(lx(b2x(buy.redeem_tx))))
+
     if(sell.redeemtype == 'timelock'):
         privkey = get_redeemer_priv_key(sell)    
         sell = get_raw_redeem(sell,privkey)
         sell.redeem_tx = send_raw_tx(sell.currency, sell.rawredeemtx)
     
+    buy.fund_tx = 2
+    sell.fund_tx = 2
+    buy.redeem_tx =2
+    sell.redeem_tx =2
+    buy.redeemscript =2
+    sell.redeemscript =2
+    buy.rawredeem =2
+    sell.rawredeem =2
+
     trade.buyContract = buy
     trade.sellContract = sell
     
-    #save_seller_trade(trade)
+    save_seller_trade(trade)
     
 
 
