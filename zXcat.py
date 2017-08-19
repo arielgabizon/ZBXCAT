@@ -322,9 +322,9 @@ def get_raw_redeem(contract, privkey):
     fundtx = find_transaction_to_address(p2sh)
  
     p2sh = P2SHBitcoinAddress(p2sh)
-    '''if contract.fund_tx['address'] == p2sh:
-        print("Found {0} in p2sh {1}, redeeming...".format(amount, p2sh))
-'''
+    if( fundtx is None):
+        raise ValueError("no fund tx")
+   
     redeemPubKey = find_redeemAddr(contract)
     print('redeemPubKey', redeemPubKey)
 
@@ -349,7 +349,7 @@ def get_raw_redeem(contract, privkey):
     
     txin_scriptPubKey = redeemscript.to_p2sh_scriptPubKey()
     VerifyScript(txin.scriptSig, txin_scriptPubKey, tx, 0, (SCRIPT_VERIFY_P2SH,))
-    print("script verified, writing raw redeem tx in contract")
+    print("script verified, writing zcash raw redeem tx in contract")
     contract.rawredeemtx = b2x(CMutableTransaction.serialize(tx))
     print("TTYPPE:", type(contract.rawredeemtx))
     return contract

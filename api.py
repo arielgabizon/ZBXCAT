@@ -124,18 +124,16 @@ def seller_redeem():
         buy = get_raw_redeem(buy,privkey)  #puts the raw transaction in the raw_redeem field
         save_seller_trade(trade)
 
-        buy.redeem_tx = send_raw_tx(buy.currency, CMutableTransaction.deserialize(x(buy.rawredeemtx)))
-        print(b2x(lx(b2x(buy.redeem_tx))))
+        buy.redeem_tx = b2x(lx(b2x(send_raw_tx(buy.currency, CMutableTransaction.deserialize(x(buy.rawredeemtx))))))
+        print(buy.redeem_tx)
 
     if(sell.redeemtype == 'timelock'):
         privkey = get_redeemer_priv_key(sell)    
         sell = get_raw_redeem(sell,privkey)
-        sell.redeem_tx = send_raw_tx(sell.currency, sell.rawredeemtx)
-    
+        sell.redeem_tx = b2x(lx(b2x(send_raw_tx(sell.currency, CMutableTransaction.deserialize(x(sell.rawredeemtx))))))
 
     trade.buyContract = buy
     trade.sellContract = sell
-    
     save_seller_trade(trade)
     
 
@@ -178,12 +176,12 @@ def buyer_redeem():
         save_secret(secret)
         privkey = get_redeemer_priv_key(sell)    
         sell = get_raw_redeem(sell,privkey)  #puts the raw transaction in the raw_redeem field
-        sell.redeem_tx = send_raw_tx(sell.currency, CMutableTransaction.deserialize(sell.rawredeemtx))
-        print(b2x(lx(b2x(sell.redeem_tx))))
+        sell.redeem_tx = b2x(lx(b2x(send_raw_tx(sell.currency, CMutableTransaction.deserialize(x(sell.rawredeemtx))))))
+        print(sell.redeem_tx)
     if(buy.redeemtype == 'timelock'):
         privkey = get_redeemer_priv_key(buy)    
         buy = get_raw_redeem(buy,privkey)
-        buy.redeem_tx = send_raw_tx(buy.currency, buy.rawredeemtx)
+        buy.redeem_tx = b2x(lx(b2x(send_raw_tx(buy.currency, buy.rawredeemtx))))
     
     trade.buyContract = buy
     trade.sellContract = sell

@@ -149,7 +149,7 @@ def init_redeem_p2sh(contract, revertcontract):
    
    
     if (revert_currency == 'zcash'):
-        if(bXcat.still_locked(revertcontract)):
+        if(zXcat.still_locked(revertcontract)):
             print('too early for redeeminng with time lock on zec chain')
         else:        
             revertcontract.redeemtype = 'timelock'

@@ -131,11 +131,13 @@ def check_and_return_fundtx(contract):
     return contract
 
 # assuming we have the correct fund tx in the contract prepares the signed redeem raw tx
+# assuming we have the correct fund tx in the contract prepares the signed redeem raw tx
 def get_raw_redeem(contract, privkey):
 
     p2sh = contract.p2sh
+    fundtx = find_transaction_to_address(p2sh)
+ 
     p2sh = P2SHBitcoinAddress(p2sh)
-    fundtx = contract.fund_tx
     '''if contract.fund_tx['address'] == p2sh:
         print("Found {0} in p2sh {1}, redeeming...".format(amount, p2sh))
 '''
@@ -163,8 +165,8 @@ def get_raw_redeem(contract, privkey):
     
     txin_scriptPubKey = redeemscript.to_p2sh_scriptPubKey()
     VerifyScript(txin.scriptSig, txin_scriptPubKey, tx, 0, (SCRIPT_VERIFY_P2SH,))
-    print("script verified, writing raw redeem tx in contract")
-    #contract.rawredeemtx = CMutableTransaction.serialize(tx)
+    print("script verified, writing bitcoin raw redeem tx in contract")
+    contract.rawredeemtx = b2x(CMutableTransaction.serialize(tx))
     return contract
 
 
