@@ -132,14 +132,6 @@ def seller_redeem():
         sell = get_raw_redeem(sell,privkey)
         sell.redeem_tx = send_raw_tx(sell.currency, sell.rawredeemtx)
     
-    buy.fund_tx = 2
-    sell.fund_tx = 2
-    buy.redeem_tx =2
-    sell.redeem_tx =2
-    buy.redeemscript =2
-    sell.redeemscript =2
-    buy.rawredeem =2
-    sell.rawredeem =2
 
     trade.buyContract = buy
     trade.sellContract = sell
