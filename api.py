@@ -5,6 +5,7 @@ from zcash.core import b2x, lx, x, b2lx, COIN, COutPoint, CMutableTxOut, CMutabl
 from xcat import *
 from zcash.core import b2x
 from zcash.core.serialize import *
+from zcash.wallet import CBitcoinSecret  #watch out for changes in bitcoin vs zcash code of this object, assuming now it's the same in both!
 
 print("Starting test of xcat...")
 
@@ -122,16 +123,20 @@ def seller_redeem():
        
     # in case we're still in the time lock on buy side, try to redeem with secret
     if(buy.redeemtype == 'secret'):
-        privkey = get_redeemer_priv_key(buy)    
-        buy = get_raw_redeem(buy,privkey)  #puts the raw transaction in the raw_redeem field
+#        privkey = get_redeemer_priv_key(buy)
+        print("Please enter the private key of the ", buy.currency, " redeem address",  buy.redeemer, ":")    
+        privkey = input()
+        buy = get_raw_redeem(buy,CBitcoinSecret(privkey))  #puts the raw transaction in the raw_redeem field
         save_seller_trade(trade)
 
         buy.redeem_tx = b2x(lx(b2x(send_raw_tx(buy.currency, CMutableTransaction.deserialize(x(buy.rawredeemtx))))))
         print(buy.redeem_tx)
 
     if(sell.redeemtype == 'timelock'):
-        privkey = get_redeemer_priv_key(sell)    
-        sell = get_raw_redeem(sell,privkey)
+        print("Please enter the private key of the ", sell.currency, " redeem address", sell.funder, ":")    
+        privkey = input()
+        #privkey = get_redeemer_priv_key(sell)    
+        sell = get_raw_redeem(sell,CBitcoinSecret(privkey))
         sell.redeem_tx = b2x(lx(b2x(send_raw_tx(sell.currency, CMutableTransaction.deserialize(x(sell.rawredeemtx))))))
 
     trade.buyContract = buy
