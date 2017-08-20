@@ -300,33 +300,25 @@ def find_secret(p2sh,vinid):
     # is this working?
 
     txs = bitcoind.listtransactions ()
-    print("==========================================LISTTT============", txs)
-    print()
     for tx in txs:
-        print("tx addr:", tx['address'], "tx id:", tx['txid'])
         raw = bitcoind.gettransaction(lx(tx['txid']))['hex']
         decoded = bitcoind.decoderawtransaction(raw)
         if('txid' in decoded['vin'][0]):
             sendid = decoded['vin'][0]['txid']
             
             if (sendid == vinid ):
-                print(type(tx['txid']))
-                print(str.encode(tx['txid']))
                 return parse_secret(lx(tx['txid']))
     print("Redeem transaction with secret not found")
     return ""
 
 def parse_secret(txid):
     raw = bitcoind.gettransaction(txid)['hex']
-    # print("Raw", raw)
     decoded = bitcoind.decoderawtransaction(raw)
     scriptSig = decoded['vin'][0]['scriptSig']
-    print("Decoded", scriptSig)
     asm = scriptSig['asm'].split(" ")
     pubkey = asm[1]
     secret = hex2str(asm[2])
     redeemPubkey = P2PKHBitcoinAddress.from_pubkey(x(pubkey))
-    print('redeemPubkey', redeemPubkey)
     print(secret)
     return secret
 

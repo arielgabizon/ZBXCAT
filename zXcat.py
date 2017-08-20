@@ -98,29 +98,14 @@ def find_transaction_to_address(p2sh):
 #     return fund_txinfo['details'][0]
 def find_secret(p2sh,vinid):
     zcashd.importaddress(p2sh, "", False)
-    # is this working?
-    print("vinid:",vinid)
     txs = zcashd.listtransactions()
-    # print("==========================================LISTTT============", txs)
-    # print()
-    # print('LENNNNNNN:', len(txs))
-    print('LENNNNNNN2:', len(txs))
     for tx in txs:
-        # print("tx addr:", tx['address'], "tx id:", tx['txid'])
-        # print(type(tx['address']))
-        # print(type(p2sh))
-        # print('type::',type(tx['txid']))
         raw = zcashd.gettransaction(lx(tx['txid']))['hex']
         decoded = zcashd.decoderawtransaction(raw)
-        print("fdsfdfds", decoded['vin'][0])
         if('txid' in decoded['vin'][0]):
             sendid = decoded['vin'][0]['txid']
-            print("sendid:", sendid)
             
             if (sendid == vinid ):
-                # print(type(tx['txid']))
-                # print(str.encode(tx['txid']))
-                print("in if")
                 return parse_secret(lx(tx['txid']))
     print("Redeem transaction with secret not found")
     return ""
@@ -128,15 +113,12 @@ def find_secret(p2sh,vinid):
 
 def parse_secret(txid):
     raw = zcashd.gettransaction(txid)['hex']
-    # print("Raw", raw)
     decoded = zcashd.decoderawtransaction(raw)
     scriptSig = decoded['vin'][0]['scriptSig']
-    print("Decoded", scriptSig)
     asm = scriptSig['asm'].split(" ")
     pubkey = asm[1]
     secret = hex2str(asm[2])
     redeemPubkey = P2PKHBitcoinAddress.from_pubkey(x(pubkey))
-    print('redeemPubkey', redeemPubkey)
     print(secret)
     return secret
 
@@ -180,10 +162,6 @@ def find_recipient(contract):
     redeemPubkey = P2PKHBitcoinAddress.from_pubkey(x(pubkey))
     print('redeemPubkey', redeemPubkey)
 
-# addr = CBitcoinAddress('tmFRXyju7ANM7A9mg75ZjyhFW1UJEhUPwfQ')
-# print(addr)
-# # print(b2x('tmFRXyju7ANM7A9mg75ZjyhFW1UJEhUPwfQ'))
-# print(b2x(addr))
 
 def new_zcash_addr():
     addr = zcashd.getnewaddress()

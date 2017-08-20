@@ -163,7 +163,6 @@ def buyer_redeem():
         # in case we're still in the time lock on buy side, try to redeem with secret
     print(sell.redeemtype)
     if(sell.redeemtype == 'secret'):
-        print("33")
         if(not hasattr(buyContract,'fund_tx')):
             print("Seems address has not been funded yet. Aborting.")
             quit()
@@ -181,12 +180,17 @@ def buyer_redeem():
                 print("Secret not found")
 
         save_secret(secret)
-        privkey = get_redeemer_priv_key(sell)    
+        #privkey = get_redeemer_priv_key(sell)    
+        print("Please enter the private key of the ", sell.currency, " redeem address",  sell.redeemer, ":")    
+        privkey = CBitcoinSecret(input())
         sell = get_raw_redeem(sell,privkey)  #puts the raw transaction in the raw_redeem field
+
         sell.redeem_tx = b2x(lx(b2x(send_raw_tx(sell.currency, CMutableTransaction.deserialize(x(sell.rawredeemtx))))))
         print(sell.redeem_tx)
     if(buy.redeemtype == 'timelock'):
-        privkey = get_redeemer_priv_key(buy)    
+#        privkey = get_redeemer_priv_key(buy)    
+        print("Please enter the private key of the ", buy.currency, " fund address",  buy.redeemer, ":")    
+        privkey = CBitcoinSecret(input())
         buy = get_raw_redeem(buy,privkey)
         buy.redeem_tx = b2x(lx(b2x(send_raw_tx(buy.currency, buy.rawredeemtx))))
     
