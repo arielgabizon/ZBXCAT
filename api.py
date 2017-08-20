@@ -101,7 +101,9 @@ def buyer_fund():
     sell_p2sh_balance = check_p2sh(sell.currency, sell.p2sh)
     if (sell_p2sh_balance < float(sell.amount)):
                 raise ValueError("Sell p2sh not funded, buyer cannot redeem")
-    trade.buyContract = fund_contract(trade.buyContract)
+    print("The seller has funded has side. Please send ", trade.buyContract.amount, " ", trade.buyContract.currency, "to", trade.buyContract.p2sh)
+    trade.buyContract.fund_tx =  input("and enter the txid of that transaction here:")
+    # trade.buyContract = fund_contract(trade.buyContract) - this line does the funding automatically
     print("fund txid on ", trade.buyContract.currency, " chain is ", trade.buyContract.fund_tx)
 
     save_buyer_trade(trade)
